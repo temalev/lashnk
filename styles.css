@@ -250,23 +250,30 @@ section {
 }
 
 .category-title {
-    font-size: 2rem;
-    color: var(--dark-color);
+    font-size: 1.8rem;
+    color: var(--secondary-color);
     margin-bottom: 2rem;
-    text-align: center;
+    text-align: left;
+    font-weight: 600;
+    padding-left: 1.5rem;
     position: relative;
-    padding-bottom: 1rem;
+    margin-top: 3rem;
 }
 
-.category-title::after {
+.category-title:first-child {
+    margin-top: 0;
+}
+
+.category-title::before {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 2px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 30px;
     background: var(--primary-color);
+    border-radius: 2px;
 }
 
 .services-grid {
