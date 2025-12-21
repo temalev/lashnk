@@ -82,6 +82,78 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(el);
     });
+
+    // Load reviews
+    loadReviews();
 });
+
+// Load and display reviews from JSON file
+async function loadReviews() {
+    try {
+        const response = await fetch('reviews.json');
+        if (!response.ok) {
+            throw new Error('Failed to load reviews');
+        }
+        const reviews = await response.json();
+        displayReviews(reviews);
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        const reviewsGrid = document.getElementById('reviewsGrid');
+        if (reviewsGrid) {
+            reviewsGrid.innerHTML = '<p style="text-align: center; color: #888;">Отзывы временно недоступны</p>';
+        }
+    }
+}
+
+// Display reviews in the grid
+function displayReviews(reviews) {
+    const reviewsGrid = document.getElementById('reviewsGrid');
+    if (!reviewsGrid) return;
+
+    reviewsGrid.innerHTML = reviews.map(review => `
+        <div class="review-card">
+            <div class="review-header">
+                <h4 class="review-name">${escapeHtml(review.name)}</h4>
+                <span class="review-date">${escapeHtml(review.date)}</span>
+            </div>
+            <div class="review-service">${escapeHtml(review.service)}</div>
+            <div class="review-rating">
+                ${generateStars(review.rating)}
+            </div>
+            <p class="review-comment">${escapeHtml(review.comment)}</p>
+        </div>
+    `).join('');
+
+    // Add animation to review cards
+    const reviewCards = reviewsGrid.querySelectorAll('.review-card');
+    reviewCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        setTimeout(() => {
+            observer.observe(card);
+        }, index * 100);
+    });
+}
+
+// Generate star rating HTML
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 0; i < 5; i++) {
+        if (i < rating) {
+            stars += '<span class="star">★</span>';
+        } else {
+            stars += '<span class="star" style="color: #ddd;">★</span>';
+        }
+    }
+    return stars;
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
 
