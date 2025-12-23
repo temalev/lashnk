@@ -384,6 +384,11 @@ section {
     margin-top: 3rem;
 }
 
+.reviews-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
 .review-card {
     background: var(--light-color);
     padding: 1.8rem;
