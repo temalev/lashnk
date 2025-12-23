@@ -20,6 +20,7 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     overflow-x: hidden;
+    position: relative;
 }
 
 .container {
@@ -584,6 +585,25 @@ section {
 }
 
 
+.sign-up {
+    position: fixed;
+    bottom: 50px;
+    right: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--white);
+    font-size: .8rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100px;
+    width: 100px;
+    align-content: center;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .nav {
@@ -726,6 +746,13 @@ section {
 
     .social-links {
         justify-content: center;
+    }
+    .sign-up {
+        bottom: 20px;
+        right: 20px;
+        height: 80px;
+        width: 80px;
+        font-size: .6rem;
     }
 }
 
