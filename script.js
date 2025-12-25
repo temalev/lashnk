@@ -68,10 +68,10 @@ async function loadComponents() {
             const headerPlaceholder = document.getElementById('header-placeholder');
             if (headerPlaceholder) {
                 headerPlaceholder.innerHTML = headerHtml;
-                // Wait a bit for DOM to update
+                // Wait longer for DOM to fully update
                 setTimeout(() => {
                     initHeaderScripts();
-                }, 50);
+                }, 200);
             }
         }
         
@@ -105,18 +105,34 @@ function initHeaderScripts() {
         return;
     }
     
+    // Double check that elements exist and are in DOM
+    if (menuToggle === null || nav === null) {
+        console.error('Elements are null after check');
+        return;
+    }
+    
     headerInitialized = true;
     
-    menuToggle.addEventListener('click', () => {
-        nav.classList.toggle('active');
-        menuToggle.classList.toggle('active');
-    });
+    // Add click handler with explicit null check
+    if (menuToggle && typeof menuToggle.addEventListener === 'function') {
+        menuToggle.addEventListener('click', () => {
+            if (nav) nav.classList.toggle('active');
+            if (menuToggle) menuToggle.classList.toggle('active');
+        });
+    } else {
+        console.error('menuToggle is not a valid element or addEventListener is not available');
+        return;
+    }
     
     // Adapt navigation links based on current page
     const currentPage = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-link[data-section]');
     navLinks.forEach(link => {
+        if (!link) return;
+        
         const section = link.getAttribute('data-section');
+        if (!section) return;
+        
         const sectionElement = document.getElementById(section);
         
         // If section doesn't exist on current page, link to main page
@@ -127,10 +143,12 @@ function initHeaderScripts() {
         }
         
         // Close mobile menu when clicking on a link
-        link.addEventListener('click', () => {
-            if (nav) nav.classList.remove('active');
-            if (menuToggle) menuToggle.classList.remove('active');
-        });
+        if (typeof link.addEventListener === 'function') {
+            link.addEventListener('click', () => {
+                if (nav) nav.classList.remove('active');
+                if (menuToggle) menuToggle.classList.remove('active');
+            });
+        }
     });
     
     // Header scroll effect (only add once)
