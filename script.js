@@ -34,12 +34,14 @@ function initSmoothScroll() {
 }
 
 // Gallery image hover effect enhancement
-const galleryItems = document.querySelectorAll('.gallery-item');
-galleryItems.forEach(item => {
-    item.addEventListener('mouseenter', function() {
-        this.style.transition = 'transform 0.3s ease';
+function initGalleryHover() {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transition = 'transform 0.3s ease';
+        });
     });
-});
+}
 
 // Add animation on scroll
 const observerOptions = {
@@ -158,6 +160,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             initSmoothScroll();
         }, 100);
+        
+        // Initialize gallery hover effects
+        setTimeout(() => {
+            initGalleryHover();
+        }, 150);
         
         const animateElements = document.querySelectorAll('.service-card, .gallery-item, .about-text');
         animateElements.forEach(el => {
