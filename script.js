@@ -1,25 +1,37 @@
 // Smooth scroll for navigation links
-document.addEventListener('DOMContentLoaded', () => {
-    // This will be called after components are loaded
-    setTimeout(() => {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const headerOffset = 80;
-                    const elementPosition = target.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+let smoothScrollInitialized = false;
 
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
+function initSmoothScroll() {
+    if (smoothScrollInitialized) return;
+    
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    if (anchors.length === 0) {
+        setTimeout(initSmoothScroll, 100);
+        return;
+    }
+    
+    smoothScrollInitialized = true;
+    
+    anchors.forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href === '#' || href === '#!') return;
+            
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                const headerOffset = 80;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
         });
-    }, 100);
-});
+    });
+}
 
 // Gallery image hover effect enhancement
 const galleryItems = document.querySelectorAll('.gallery-item');
@@ -54,7 +66,10 @@ async function loadComponents() {
             const headerPlaceholder = document.getElementById('header-placeholder');
             if (headerPlaceholder) {
                 headerPlaceholder.innerHTML = headerHtml;
-                initHeaderScripts();
+                // Wait a bit for DOM to update
+                setTimeout(() => {
+                    initHeaderScripts();
+                }, 50);
             }
         }
         
@@ -73,17 +88,27 @@ async function loadComponents() {
 }
 
 // Initialize header scripts after header is loaded
+let headerInitialized = false;
+
 function initHeaderScripts() {
+    if (headerInitialized) return;
+    
     // Mobile Menu Toggle
     const menuToggle = document.getElementById('menuToggle');
     const nav = document.querySelector('.nav');
     
-    if (menuToggle && nav) {
-        menuToggle.addEventListener('click', () => {
-            nav.classList.toggle('active');
-            menuToggle.classList.toggle('active');
-        });
+    if (!menuToggle || !nav) {
+        console.warn('Header elements not found, retrying...');
+        setTimeout(initHeaderScripts, 100);
+        return;
     }
+    
+    headerInitialized = true;
+    
+    menuToggle.addEventListener('click', () => {
+        nav.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+    });
     
     // Adapt navigation links based on current page
     const currentPage = window.location.pathname;
@@ -93,7 +118,7 @@ function initHeaderScripts() {
         const sectionElement = document.getElementById(section);
         
         // If section doesn't exist on current page, link to main page
-        if (!sectionElement && !currentPage.includes('index.html')) {
+        if (!sectionElement && !currentPage.includes('index.html') && currentPage !== '/') {
             link.href = `index.html#${section}`;
         } else {
             link.href = `#${section}`;
@@ -106,10 +131,14 @@ function initHeaderScripts() {
         });
     });
     
-    // Header scroll effect
+    // Header scroll effect (only add once)
     const header = document.querySelector('.header');
     if (header) {
+        let scrollHandlerAdded = false;
         window.addEventListener('scroll', () => {
+            if (!scrollHandlerAdded) {
+                scrollHandlerAdded = true;
+            }
             const currentScroll = window.pageYOffset;
             
             if (currentScroll > 100) {
@@ -125,6 +154,11 @@ function initHeaderScripts() {
 document.addEventListener('DOMContentLoaded', () => {
     // Load header and footer first
     loadComponents().then(() => {
+        // Initialize smooth scroll after components are loaded
+        setTimeout(() => {
+            initSmoothScroll();
+        }, 100);
+        
         const animateElements = document.querySelectorAll('.service-card, .gallery-item, .about-text');
         animateElements.forEach(el => {
             el.style.opacity = '0';
