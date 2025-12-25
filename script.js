@@ -58,11 +58,22 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
+// Get base path based on current page location
+function getBasePath() {
+    const path = window.location.pathname;
+    if (path.includes('/brows-lamination/')) {
+        return '../';
+    }
+    return './';
+}
+
 // Load header and footer components
 async function loadComponents() {
     try {
+        const basePath = getBasePath();
+        
         // Load header
-        const headerResponse = await fetch('components/header.html');
+        const headerResponse = await fetch(basePath + 'components/header.html');
         if (headerResponse.ok) {
             const headerHtml = await headerResponse.text();
             const headerPlaceholder = document.getElementById('header-placeholder');
@@ -76,7 +87,7 @@ async function loadComponents() {
         }
         
         // Load footer
-        const footerResponse = await fetch('components/footer.html');
+        const footerResponse = await fetch(basePath + 'components/footer.html');
         if (footerResponse.ok) {
             const footerHtml = await footerResponse.text();
             const footerPlaceholder = document.getElementById('footer-placeholder');
@@ -136,8 +147,8 @@ function initHeaderScripts() {
         const sectionElement = document.getElementById(section);
         
         // If section doesn't exist on current page, link to main page
-        if (!sectionElement && !currentPage.includes('index.html') && currentPage !== '/') {
-            link.href = `index.html#${section}`;
+        if (!sectionElement && !currentPage.includes('index.html') && currentPage !== '/' && !currentPage.endsWith('/')) {
+            link.href = `/#${section}`;
         } else {
             link.href = `#${section}`;
         }
@@ -200,7 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Load and display reviews from JSON file
 async function loadReviews() {
     try {
-        const response = await fetch('reviews.json');
+        const basePath = getBasePath();
+        const response = await fetch(basePath + 'reviews.json');
         if (!response.ok) {
             throw new Error('Failed to load reviews');
         }
